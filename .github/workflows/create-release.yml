@@ -22,20 +22,20 @@ jobs:
       id: get_tag
       run: |
         latest_tag=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
-        echo "Latest tag: $latest_tag"
         if [ -z "$latest_tag" ]; then
           latest_tag="v0.0.0"
         fi
-        echo "latest_tag=$latest_tag" >> "$GITHUB_OUTPUT"
+        echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
 
     - name: Bump version
       id: bump
       run: |
-        IFS='.' read -r major minor patch <<<"${{ steps.get_tag.outputs.latest_tag#v }}"
+        version="${{ steps.get_tag.outputs.latest_tag }}"
+        version="${version#v}"  # Strip the "v"
+        IFS='.' read -r major minor patch <<<"$version"
         patch=$((patch + 1))
-        new_version="v$major.$minor.$patch"
-        echo "Bumping to $new_version"
-        echo "new_tag=$new_version" >> "$GITHUB_OUTPUT"
+        new_tag="v$major.$minor.$patch"
+        echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
     - name: Create Git tag
       run: |
