@@ -1,35 +1,48 @@
-name: Create Release
+name: Auto Release with Version Bump
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'  # Auto-trigger on version tags like v1.0.0
-
-  workflow_dispatch:  # 👈 Manual trigger from GitHub UI
-    inputs:
-      tag_name:
-        description: 'Release tag (e.g., v1.0.0)'
-        required: true
-      release_name:
-        description: 'Release name'
-        required: false
-      generate_release:
-        description: 'Create GitHub Release (true/false)'
-        required: false
-        default: 'true'
+  workflow_dispatch:  # Manual trigger
 
 jobs:
-  build:
-    runs-on: windows-latest
+  release:
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Needed to get all tags
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'  # Change as needed
+        dotnet-version: '8.0.x'
+
+    - name: Get latest tag
+      id: get_tag
+      run: |
+        latest_tag=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+        echo "Latest tag: $latest_tag"
+        if [ -z "$latest_tag" ]; then
+          latest_tag="v0.0.0"
+        fi
+        echo "latest_tag=$latest_tag" >> "$GITHUB_OUTPUT"
+
+    - name: Bump version
+      id: bump
+      run: |
+        IFS='.' read -r major minor patch <<<"${{ steps.get_tag.outputs.latest_tag#v }}"
+        patch=$((patch + 1))
+        new_version="v$major.$minor.$patch"
+        echo "Bumping to $new_version"
+        echo "new_tag=$new_version" >> "$GITHUB_OUTPUT"
+
+    - name: Create Git tag
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git tag ${{ steps.bump.outputs.new_tag }}
+        git push origin ${{ steps.bump.outputs.new_tag }}
 
     - name: Restore dependencies
       run: dotnet restore
@@ -41,14 +54,13 @@ jobs:
       run: dotnet publish -c Release -o publish
 
     - name: Zip published files
-      run: Compress-Archive -Path publish/* -DestinationPath release.zip
+      run: zip -r release.zip publish
 
     - name: Create GitHub Release
-      if: ${{ github.event.inputs.generate_release == 'true' }}
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: ${{ github.event.inputs.tag_name }}
-        name: ${{ github.event.inputs.release_name || github.event.inputs.tag_name }}
+        tag_name: ${{ steps.bump.outputs.new_tag }}
+        name: Release ${{ steps.bump.outputs.new_tag }}
         files: release.zip
       env:
-        GITHUB_TOKEN: ${{ secrets.PUBLIC_PAT }}
+        GITHUB_TOKEN: ${{ secrets.PUBLIC_PAT }}  # use your PAT here
