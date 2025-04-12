@@ -51,4 +51,4 @@ jobs:
         name: ${{ github.event.inputs.release_name || github.event.inputs.tag_name }}
         files: release.zip
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PUBLIC_PAT }}
