@@ -4,6 +4,9 @@ using System.Web;
 using PWSH.Kasplex.Base;
 using PWSH.Kasplex.Constants;
 
+using LanguageExt;
+using static LanguageExt.Prelude;
+
 namespace PWSH.Kasplex.Verbs
 {
     /// <summary>
@@ -13,7 +16,7 @@ namespace PWSH.Kasplex.Verbs
     [OutputType(typeof(ResponseSchema))]
     public sealed partial class KRC20OperationList : KasplexPSCmdlet
     {
-        private KasplexJob<List<ResponseSchema>?>? _job;
+        private KasplexJob<List<ResponseSchema>>? _job;
 
 /* -----------------------------------------------------------------
 CONSTRUCTORS                                                       |
@@ -34,10 +37,10 @@ PROCESS                                                            |
 
         protected override void BeginProcessing()
         {
-            async Task<(List<ResponseSchema>?, ErrorRecord?)> processLogic(CancellationToken cancellation_token) { return await DoProcessLogicAsync(this._httpClient!, this._deserializerOptions!, cancellation_token); }
+            async Task<Either<ErrorRecord, List<ResponseSchema>>> processLogic(CancellationToken cancellation_token) { return await DoProcessLogicAsync(this._httpClient!, this._deserializerOptions!, cancellation_token); }
 
             var thisName = this.MyInvocation.MyCommand.Name;
-            this._job = new KasplexJob<List<ResponseSchema>?>(processLogic, thisName);
+            this._job = new KasplexJob<List<ResponseSchema>>(processLogic, thisName);
         }
 
         protected override void ProcessRecord()
@@ -63,14 +66,15 @@ PROCESS                                                            |
             }
             else
             {
-                var (responce, err) = DoProcessLogicAsync(this._httpClient!, this._deserializerOptions!, stoppingToken).GetAwaiter().GetResult();
-                if (err is not null)
+                var result = DoProcessLogicAsync(this._httpClient!, this._deserializerOptions!, stoppingToken).GetAwaiter().GetResult();
+                if (result.IsLeft)
                 {
-                    WriteError(err);
+                    WriteError(result.LeftToList()[0]);
                     return;
                 }
 
-                WriteObject(responce);
+                var response = result.RightToList()[0];
+                WriteObject(response);
             }
         }
 
@@ -89,7 +93,7 @@ HELPERS                                                            |
             return "/krc20/oplist?" + queryParams.ToString();
         }
 
-        private async Task<(List<ResponseSchema>?, ErrorRecord?)> DoProcessLogicAsync(HttpClient http_client, JsonSerializerOptions deserializer_options, CancellationToken cancellation_token)
+        private async Task<Either<ErrorRecord, List<ResponseSchema>>> DoProcessLogicAsync(HttpClient http_client, JsonSerializerOptions deserializer_options, CancellationToken cancellation_token)
         {
             try
             {
@@ -98,26 +102,26 @@ HELPERS                                                            |
 
                 do
                 {
-                    var (request, err) = await http_client.SendRequestAsync(this, Globals.KASPLEX_API_ADDRESS, BuildQuery(nextCursor), HttpMethod.Get, null, TimeoutSeconds, cancellation_token);
-                    if (err is not null) return (default, err);
-                    if (request is null) return (default, new ErrorRecord(new InvalidOperationException("Received a null response from the API."), "TaskNull", ErrorCategory.InvalidOperation, this));
+                    var result = await http_client.SendRequestAsync(this, Globals.KASPLEX_API_ADDRESS, BuildQuery(nextCursor), HttpMethod.Get, null, TimeoutSeconds, cancellation_token);
+                    if (result.IsLeft)
+                        return result.LeftToList()[0];
 
-                    var (response, deserializationError) = await request.ProcessResponseAsync<ResponseSchema>(deserializer_options, this, TimeoutSeconds, cancellation_token);
-                    if (deserializationError is not null) return (default, deserializationError);
-                    if (response is null) return (default, new ErrorRecord(new InvalidOperationException("The API response was not initialized."), "TaskNull", ErrorCategory.InvalidOperation, this));
+                    var response = result.RightToList()[0];
+                    var message = await response.ProcessResponseAsync<ResponseSchema>(deserializer_options, this, TimeoutSeconds, cancellation_token);
+                    if (message.IsLeft)
+                        return message.LeftToList()[0];
 
-                    if (response.Result is not null) allTokens.Add(response);
-
-                    nextCursor = response.Next;
+                    allTokens.Add(message.RightToList()[0]);
+                    nextCursor = message.RightToList()[0].Next;
 
                 } while (!string.IsNullOrEmpty(nextCursor) && !cancellation_token.IsCancellationRequested);
 
-                return (allTokens, null);
+                return Right<ErrorRecord, List<ResponseSchema>>(allTokens);
             }
             catch (OperationCanceledException)
-            { return (default, new ErrorRecord(new OperationCanceledException("Task was canceled."), "TaskCanceled", ErrorCategory.OperationStopped, this)); }
+            { return Left<ErrorRecord, List<ResponseSchema>>(new ErrorRecord(new OperationCanceledException("Task was canceled."), "TaskCanceled", ErrorCategory.OperationStopped, this)); }
             catch (Exception e)
-            { return (default, new ErrorRecord(e, "TaskInvalid", ErrorCategory.InvalidOperation, this)); }
+            { return Left<ErrorRecord, List<ResponseSchema>>(new ErrorRecord(e, "TaskInvalid", ErrorCategory.InvalidOperation, this)); }
         }
     }
 }
