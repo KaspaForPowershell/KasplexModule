@@ -5,7 +5,6 @@ using PWSH.Kasplex.Base;
 using PWSH.Kasplex.Constants;
 
 using LanguageExt;
-using static LanguageExt.Prelude;
 
 namespace PWSH.Kasplex.Verbs
 {
@@ -112,12 +111,12 @@ HELPERS                                                            |
 
                 } while (!string.IsNullOrEmpty(nextCursor) && !cancellation_token.IsCancellationRequested);
 
-                return Right<ErrorRecord, List<ResponseSchema>>(allTokens);
+                return allTokens;
             }
             catch (OperationCanceledException)
-            { return Left<ErrorRecord, List<ResponseSchema>>(new ErrorRecord(new OperationCanceledException("Task was canceled."), "TaskCanceled", ErrorCategory.OperationStopped, this)); }
+            { return new ErrorRecord(new OperationCanceledException("Task was canceled."), "TaskCanceled", ErrorCategory.OperationStopped, this); }
             catch (Exception e)
-            { return Left<ErrorRecord, List<ResponseSchema>>(new ErrorRecord(e, "TaskInvalid", ErrorCategory.InvalidOperation, this)); }
+            { return new ErrorRecord(e, "TaskInvalid", ErrorCategory.InvalidOperation, this); }
         }
     }
 }
