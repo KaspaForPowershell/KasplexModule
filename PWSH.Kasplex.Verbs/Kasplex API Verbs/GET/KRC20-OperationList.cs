@@ -1,12 +1,4 @@
-﻿using System.Management.Automation;
-using System.Text.Json;
-using System.Web;
-using PWSH.Kasplex.Base;
-using PWSH.Kasplex.Constants;
-
-using LanguageExt;
-
-namespace PWSH.Kasplex.Verbs
+﻿namespace PWSH.Kasplex.Verbs
 {
     /// <summary>
     /// Get list of KRC-20 operations.

@@ -1,10 +1,4 @@
-﻿using System.Management.Automation;
-using System.Text;
-using System.Text.Json;
-
-using LanguageExt;
-
-namespace PWSH.Kasplex.Base
+﻿namespace PWSH.Kasplex.Base
 {
     public static class ExtensionMethods
     {

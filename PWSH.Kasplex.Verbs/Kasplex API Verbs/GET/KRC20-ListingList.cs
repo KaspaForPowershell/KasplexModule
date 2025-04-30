@@ -1,12 +1,4 @@
-﻿using System.Management.Automation;
-using System.Text.Json;
-using System.Web;
-using PWSH.Kasplex.Base;
-using PWSH.Kasplex.Constants;
-
-using LanguageExt;
-
-namespace PWSH.Kasplex.Verbs
+﻿namespace PWSH.Kasplex.Verbs
 {
     /// <summary>
     /// Get the listing information of KRC20 tokens.

@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Management.Automation;
-using System.Text.RegularExpressions;
-
-namespace PWSH.Kasplex.Base.Attributes
+﻿namespace PWSH.Kasplex.Base.Attributes
 {
     /// <summary>
     /// Validate if a string is a valid Kaspa transaction ID pattern: ^[a-f0-9]{64}$

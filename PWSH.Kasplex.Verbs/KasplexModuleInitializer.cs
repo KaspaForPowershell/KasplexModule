@@ -1,7 +1,4 @@
-﻿using System.Management.Automation;
-using System.Text.Json;
-
-namespace PWSH.Kasplex.Verbs
+﻿namespace PWSH.Kasplex.Verbs
 {
     public sealed class KasplexModuleInitializer : IModuleAssemblyInitializer, IDisposable
     {

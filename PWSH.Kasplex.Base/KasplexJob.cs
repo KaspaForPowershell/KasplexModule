@@ -1,13 +1,10 @@
-﻿using LanguageExt;
-using System.Management.Automation;
-
-namespace PWSH.Kasplex.Base
+﻿namespace PWSH.Kasplex.Base
 {
-    public sealed class KasplexJob<TResponsetype> : Job
+    public sealed class KasplexJob<TResponse> : Job
     {
         private readonly object _lock = new();
         private readonly CancellationTokenSource _internalCancellation = new();
-        private readonly Func<CancellationToken, Task<Either<ErrorRecord, TResponsetype>>> _processTask;
+        private readonly Func<CancellationToken, Task<Either<ErrorRecord, TResponse>>> _processTask;
 
         private bool _hasMoreData;
         private string _statusMessage;
@@ -16,7 +13,7 @@ namespace PWSH.Kasplex.Base
 CONSTRUCTORS                                                       |
 ----------------------------------------------------------------- */
 
-        public KasplexJob(Func<CancellationToken, Task<Either<ErrorRecord, TResponsetype>>> process_task, string command_name) : base(command_name)
+        public KasplexJob(Func<CancellationToken, Task<Either<ErrorRecord, TResponse>>> process_task, string command_name) : base(command_name)
         {
             lock (this._lock)
             {
