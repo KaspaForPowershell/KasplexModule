@@ -1,11 +1,11 @@
 ﻿namespace PWSH.Kasplex.Verbs;
 
 /// <summary>
-/// Get balance of a KRC-20 token for an address.
+/// Get the list of archived data for Vspc-block by DAA score.
 /// </summary>
-[Cmdlet(KasplexVerbNames.KRC20, "AddressTokenBalance")]
+[Cmdlet(KasplexVerbNames.KRC20, "ArchiveVspcList")]
 [OutputType(typeof(ResponseSchema))]
-public sealed partial class KRC20AddressTokenBalance : KasplexPSCmdlet
+public sealed partial class KRC20ArchiveVspcList : KasplexPSCmdlet
 {
     private KasplexJob<ResponseSchema>? _job;
 
@@ -13,7 +13,7 @@ public sealed partial class KRC20AddressTokenBalance : KasplexPSCmdlet
 CONSTRUCTORS                                                       |
 ----------------------------------------------------------------- */
 
-    public KRC20AddressTokenBalance()
+    public KRC20ArchiveVspcList()
     {
         this._httpClient = KasplexModuleInitializer.Instance?.HttpClient;
         this._deserializerOptions = KasplexModuleInitializer.Instance?.ResponseDeserializer;
@@ -71,7 +71,7 @@ HELPERS                                                            |
 ----------------------------------------------------------------- */
 
     protected override string BuildQuery()
-        => $"/krc20/address/{Address}/token/{TokenName}";
+        => $"/archive/vspc/{DaaScore}";
 
     private async Task<Either<ErrorRecord, ResponseSchema>> DoProcessLogicAsync(HttpClient http_client, JsonSerializerOptions deserializer_options, CancellationToken cancellation_token)
     {

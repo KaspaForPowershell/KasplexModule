@@ -1,11 +1,11 @@
 ﻿namespace PWSH.Kasplex.Verbs;
 
 /// <summary>
-/// Get current indexer status, including DAA score and OP score.
+/// Get the token's detailed information including statistics.
 /// </summary>
-[Cmdlet(KasplexVerbNames.Get, "IndexerStatus")]
+[Cmdlet(KasplexVerbNames.KRC20, "TokenBlackList")]
 [OutputType(typeof(ResponseSchema))]
-public sealed partial class GetIndexerStatus : KasplexPSCmdlet
+public sealed partial class KRC20TokenBlackList : KasplexPSCmdlet
 {
     private KasplexJob<ResponseSchema>? _job;
 
@@ -13,7 +13,7 @@ public sealed partial class GetIndexerStatus : KasplexPSCmdlet
 CONSTRUCTORS                                                       |
 ----------------------------------------------------------------- */
 
-    public GetIndexerStatus()
+    public KRC20TokenBlackList()
     {
         this._httpClient = KasplexModuleInitializer.Instance?.HttpClient;
         this._deserializerOptions = KasplexModuleInitializer.Instance?.ResponseDeserializer;
@@ -71,7 +71,7 @@ HELPERS                                                            |
 ----------------------------------------------------------------- */
 
     protected override string BuildQuery()
-        => "info";
+        => $"/krc20/blacklist/{ContractAddress}";
 
     private async Task<Either<ErrorRecord, ResponseSchema>> DoProcessLogicAsync(HttpClient http_client, JsonSerializerOptions deserializer_options, CancellationToken cancellation_token)
     {

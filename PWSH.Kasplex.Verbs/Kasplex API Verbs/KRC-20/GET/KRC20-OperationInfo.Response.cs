@@ -1,6 +1,6 @@
 ﻿namespace PWSH.Kasplex.Verbs;
 
-public sealed partial class GetIndexerStatus
+public sealed partial class KRC20OperationInfo
 {
     private sealed class ResponseSchema : IEquatable<ResponseSchema>, IJSONableDisplayable
     {
@@ -8,7 +8,7 @@ public sealed partial class GetIndexerStatus
         public string? Message { get; set; }
 
         [JsonPropertyName("result")]
-        public ResultSchema? Result { get; set; }
+        public OperationSchema? Result { get; set; }
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
@@ -52,50 +52,78 @@ OPERATOR                                                           |
             => !(left == right);
     }
 
-    private sealed class ResultSchema : IEquatable<ResultSchema>, IJSONableDisplayable
+    private sealed class OperationSchema : IEquatable<OperationSchema>, IJSONableDisplayable
     {
-        [JsonPropertyName("version")]
-        public string? Version { get; set; }
+        [JsonPropertyName("p")]
+        public string? P { get; set; }
 
-        [JsonPropertyName("versionApi")]
-        public string? VersionAPI { get; set; }
+        [JsonPropertyName("op")]
+        public string? Op { get; set; }
 
-        [JsonPropertyName("daaScore")]
-        public string? DaaScore { get; set; }
+        [JsonPropertyName("tick")]
+        public string? Tick { get; set; }
 
-        [JsonPropertyName("daaScoreGap")]
-        public string? DaaScoreGap { get; set; }
+        [JsonPropertyName("amt")]
+        public string? Amt { get; set; }
+
+        [JsonPropertyName("from")]
+        public string? From { get; set; }
+
+        [JsonPropertyName("utxo")]
+        public string? UTXO { get; set; }
 
         [JsonPropertyName("opScore")]
         public string? OpScore { get; set; }
 
-        [JsonPropertyName("opTotal")]
-        public string? OpTotal { get; set; }
+        [JsonPropertyName("hashRev")]
+        public string? HashRev { get; set; }
 
-        [JsonPropertyName("tokenTotal")]
-        public string? TokenTotal { get; set; }
+        [JsonPropertyName("feeRev")]
+        public string? FeeRev { get; set; }
 
-        [JsonPropertyName("feeTotal")]
-        public string? FeeTotal { get; set; }
+        [JsonPropertyName("txAccept")]
+        public string? TxAccept { get; set; }
+
+        [JsonPropertyName("opAccept")]
+        public string? OpAccept { get; set; }
+
+        [JsonPropertyName("opError")]
+        public string? OpError { get; set; }
+
+        [JsonPropertyName("mtsAdd")]
+        public string? MtsAdd { get; set; }
+
+        [JsonPropertyName("mtsMod")]
+        public string? MtsMod { get; set; }
+
+        [JsonPropertyName("checkpoint")]
+        public string? Checkpoint { get; set; }
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
 ----------------------------------------------------------------- */
 
-        public bool Equals(ResultSchema? other)
+        public bool Equals(OperationSchema? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
 
             return
-                Version.CompareString(other.Version) &&
-                VersionAPI.CompareString(other.VersionAPI) &&
-                DaaScore.CompareString(other.DaaScore) &&
-                DaaScoreGap.CompareString(other.DaaScoreGap) &&
+                P.CompareString(other.P) &&
+                Op.CompareString(other.Op) &&
+                Tick.CompareString(other.Tick) &&
+                Amt.CompareString(other.Amt) &&
+                From.CompareString(other.From) &&
+                UTXO.CompareString(other.UTXO) &&
                 OpScore.CompareString(other.OpScore) &&
-                OpTotal.CompareString(other.OpTotal) &&
-                TokenTotal.CompareString(other.TokenTotal) &&
-                FeeTotal.CompareString(other.FeeTotal);
+                HashRev.CompareString(other.HashRev) &&
+                FeeRev.CompareString(other.FeeRev) &&
+                TxAccept.CompareString(other.TxAccept) &&
+                OpAccept.CompareString(other.OpAccept) &&
+                OpError.CompareString(other.OpError) &&
+                MtsAdd.CompareString(other.MtsAdd) &&
+                MtsMod.CompareString(other.MtsMod) &&
+                Checkpoint.CompareString(other.Checkpoint);
         }
 
         public string ToJSON()
@@ -106,23 +134,27 @@ OVERRIDES                                                          |
 ----------------------------------------------------------------- */
 
         public override bool Equals(object? obj)
-            => Equals(obj as ResultSchema);
+            => Equals(obj as OperationSchema);
 
         public override int GetHashCode()
-            => HashCode.Combine(Version, VersionAPI, DaaScore, DaaScoreGap, OpScore, OpTotal, TokenTotal, FeeTotal);
+        {
+            var hash = HashCode.Combine(P, Op, Tick, Amt, From, UTXO);
+            hash = HashCode.Combine(hash, OpScore, HashRev, FeeRev, TxAccept, OpAccept);
+            return HashCode.Combine(hash, OpError, MtsAdd, MtsMod, Checkpoint);
+        }
 
 /* -----------------------------------------------------------------
 OPERATOR                                                           |
 ----------------------------------------------------------------- */
 
-        public static bool operator ==(ResultSchema? left, ResultSchema? right)
+        public static bool operator ==(OperationSchema? left, OperationSchema? right)
         {
             if (left is null) return right is null;
 
             return left.Equals(right);
         }
 
-        public static bool operator !=(ResultSchema? left, ResultSchema? right)
+        public static bool operator !=(OperationSchema? left, OperationSchema? right)
             => !(left == right);
     }
 }

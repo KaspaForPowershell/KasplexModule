@@ -1,6 +1,6 @@
 ﻿namespace PWSH.Kasplex.Verbs;
 
-public sealed partial class KRC20AddressTokenBalances
+public sealed partial class KRC20TokenMarketInfo
 {
     private sealed class ResponseSchema : IEquatable<ResponseSchema>, IJSONableDisplayable
     {
@@ -14,7 +14,7 @@ public sealed partial class KRC20AddressTokenBalances
         public string? Next { get; set; }
 
         [JsonPropertyName("result")]
-        public List<TokenBalanceSchema>? Result { get; set; }
+        public List<TokenInfoSchema>? Result { get; set; }
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
@@ -60,38 +60,54 @@ OPERATOR                                                           |
             => !(left == right);
     }
 
-    private sealed class TokenBalanceSchema : IEquatable<TokenBalanceSchema>, IJSONableDisplayable
+    private sealed class TokenInfoSchema : IEquatable<TokenInfoSchema>, IJSONableDisplayable
     {
+        [JsonPropertyName("ca")]
+        public string? ContractAddress { get; set; }
+
         [JsonPropertyName("tick")]
         public string? Tick { get; set; }
 
-        [JsonPropertyName("balance")]
-        public string? Balance { get; set; }
+        [JsonPropertyName("from")]
+        public string? From { get; set; }
 
-        [JsonPropertyName("locked")]
-        public string? Locked { get; set; }
+        [JsonPropertyName("amount")]
+        public string? Amount { get; set; }
 
-        [JsonPropertyName("dec")]
-        public string? Dec { get; set; }
+        [JsonPropertyName("uTxid")]
+        public string? uTxID { get; set; }
 
-        [JsonPropertyName("opScoreMod")]
-        public string? OpScoreMod { get; set; }
+        [JsonPropertyName("uAddr")]
+        public string? uAddr { get; set; }
+
+        [JsonPropertyName("uAmt")]
+        public string? uAmt { get; set; }
+
+        [JsonPropertyName("uScript")]
+        public string? uScript { get; set; }
+
+        [JsonPropertyName("opScoreAdd")]
+        public string? OpScoreAdd { get; set; }
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
 ----------------------------------------------------------------- */
 
-        public bool Equals(TokenBalanceSchema? other)
+        public bool Equals(TokenInfoSchema? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
 
             return
+                ContractAddress.CompareString(other.ContractAddress) &&
                 Tick.CompareString(other.Tick) &&
-                Balance.CompareString(other.Balance) &&
-                Locked.CompareString(other.Locked) &&
-                Dec.CompareString(other.Dec) &&
-                OpScoreMod.CompareString(other.OpScoreMod);
+                From.CompareString(other.From) &&
+                Amount.CompareString(other.Amount) &&
+                uTxID.CompareString(other.uTxID) &&
+                uAddr.CompareString(other.uAddr) &&
+                uAmt.CompareString(other.uAmt) &&
+                uScript.CompareString(other.uScript) &&
+                OpScoreAdd.CompareString(other.OpScoreAdd);
         }
 
         public string ToJSON()
@@ -102,23 +118,25 @@ OVERRIDES                                                          |
 ----------------------------------------------------------------- */
 
         public override bool Equals(object? obj)
-            => Equals(obj as TokenBalanceSchema);
-
+            => Equals(obj as TokenInfoSchema);
         public override int GetHashCode()
-            => HashCode.Combine(Tick, Balance, Locked, Dec, OpScoreMod);
+        {
+            var hash = HashCode.Combine(ContractAddress, Tick, From, Amount, uTxID);
+            return HashCode.Combine(hash, uAddr, uAmt, uScript, OpScoreAdd);
+        }
 
 /* -----------------------------------------------------------------
 OPERATOR                                                           |
 ----------------------------------------------------------------- */
 
-        public static bool operator ==(TokenBalanceSchema? left, TokenBalanceSchema? right)
+        public static bool operator ==(TokenInfoSchema? left, TokenInfoSchema? right)
         {
             if (left is null) return right is null;
 
             return left.Equals(right);
         }
 
-        public static bool operator !=(TokenBalanceSchema? left, TokenBalanceSchema? right)
+        public static bool operator !=(TokenInfoSchema? left, TokenInfoSchema? right)
             => !(left == right);
     }
 }

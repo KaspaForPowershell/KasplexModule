@@ -1,20 +1,14 @@
 ﻿namespace PWSH.Kasplex.Verbs;
 
-public sealed partial class KRC20ListingList
+public sealed partial class KRC20ArchiveOperationList
 {
     private sealed class ResponseSchema : IEquatable<ResponseSchema>, IJSONableDisplayable
     {
         [JsonPropertyName("message")]
         public string? Message { get; set; }
 
-        [JsonPropertyName("prev")]
-        public string? Prev { get; set; }
-
-        [JsonPropertyName("next")]
-        public string? Next { get; set; }
-
         [JsonPropertyName("result")]
-        public List<TokenInfoSchema>? Result { get; set; }
+        public List<ResultSchema>? Result { get; set; }
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
@@ -27,8 +21,6 @@ HELPERS                                                            |
 
             return
                 Message.CompareString(other.Message) &&
-                Prev.CompareString(other.Prev) &&
-                Next.CompareString(other.Next) &&
                 Result.CompareList(other.Result);
         }
 
@@ -43,7 +35,10 @@ OVERRIDES                                                          |
             => Equals(obj as ResponseSchema);
 
         public override int GetHashCode()
-            => HashCode.Combine(Message, Result);
+        {
+            var hash = HashCode.Combine(Message);
+            return Result.GenerateHashCode(hash);
+        }
 
 /* -----------------------------------------------------------------
 OPERATOR                                                           |
@@ -60,65 +55,43 @@ OPERATOR                                                           |
             => !(left == right);
     }
 
-    private sealed class TokenInfoSchema : IEquatable<TokenInfoSchema>, IJSONableDisplayable
+    private sealed class ResultSchema : IEquatable<ResultSchema>, IJSONableDisplayable
     {
-        [JsonPropertyName("tick")]
-        public string? Tick { get; set; }
 
-        [JsonPropertyName("max")]
-        public string? Max { get; set; }
+        [JsonPropertyName("opScore")]
+        public string? OpScore { get; set; }
 
-        [JsonPropertyName("lim")]
-        public string? Lim { get; set; }
+        [JsonPropertyName("addressaffc")]
+        public string? AddressAffc { get; set; }
 
-        [JsonPropertyName("pre")]
-        public string? Pre { get; set; }
-
-        [JsonPropertyName("to")]
-        public string? To { get; set; }
-
-        [JsonPropertyName("dec")]
-        public string? Dec { get; set; }
-
-        [JsonPropertyName("minted")]
-        public string? Minted { get; set; }
-
-        [JsonPropertyName("opScoreAdd")]
-        public string? OpScoreAdd { get; set; }
-
-        [JsonPropertyName("opScoreMod")]
-        public string? OpScoreMod { get; set; }
+        [JsonPropertyName("script")]
+        public string? Script { get; set; }
 
         [JsonPropertyName("state")]
         public string? State { get; set; }
 
-        [JsonPropertyName("hashRev")]
-        public string? HashRev { get; set; }
+        [JsonPropertyName("tickaffc")]
+        public string? TickAffc { get; set; }
 
-        [JsonPropertyName("mtsAdd")]
-        public string? MtsAdd { get; set; }
+        [JsonPropertyName("txid")]
+        public string? TxID { get; set; }
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
 ----------------------------------------------------------------- */
 
-        public bool Equals(TokenInfoSchema? other)
+        public bool Equals(ResultSchema? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
 
             return
-                Tick.CompareString(other.Tick) &&
-                Max.CompareString(other.Max) &&
-                Lim.CompareString(other.Lim) &&
-                Pre.CompareString(other.Pre) &&
-                To.CompareString(other.To) &&
-                Dec.CompareString(other.Dec) &&
-                OpScoreAdd.CompareString(other.OpScoreAdd) &&
-                OpScoreMod.CompareString(other.OpScoreMod) &&
+                OpScore.CompareString(other.OpScore) &&
+                AddressAffc.CompareString(other.AddressAffc) &&
+                Script.CompareString(other.Script) &&
                 State.CompareString(other.State) &&
-                HashRev.CompareString(other.HashRev) &&
-                MtsAdd.CompareString(other.MtsAdd);
+                TickAffc.CompareString(other.TickAffc) &&
+                TxID.CompareString(other.TxID);
         }
 
         public string ToJSON()
@@ -129,26 +102,23 @@ OVERRIDES                                                          |
 ----------------------------------------------------------------- */
 
         public override bool Equals(object? obj)
-            => Equals(obj as TokenInfoSchema);
+            => Equals(obj as ResultSchema);
 
         public override int GetHashCode()
-        {
-            var hash = HashCode.Combine(Tick, Max, Lim, Pre, To, Dec);
-            return HashCode.Combine(hash, OpScoreAdd, OpScoreMod, State, HashRev, MtsAdd);
-        }
+            => HashCode.Combine(OpScore, AddressAffc, Script, State, TickAffc, TxID);
 
 /* -----------------------------------------------------------------
 OPERATOR                                                           |
 ----------------------------------------------------------------- */
 
-        public static bool operator ==(TokenInfoSchema? left, TokenInfoSchema? right)
+        public static bool operator ==(ResultSchema? left, ResultSchema? right)
         {
             if (left is null) return right is null;
 
             return left.Equals(right);
         }
 
-        public static bool operator !=(TokenInfoSchema? left, TokenInfoSchema? right)
+        public static bool operator !=(ResultSchema? left, ResultSchema? right)
             => !(left == right);
     }
 }

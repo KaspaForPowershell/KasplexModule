@@ -1,11 +1,11 @@
 ﻿namespace PWSH.Kasplex.Verbs;
 
 /// <summary>
-/// Get details of a KRC-20 vspc block.
+/// Get the current node status, including DAA score and OP score.
 /// </summary>
-[Cmdlet(KasplexVerbNames.KRC20, "VSPCDetails")]
+[Cmdlet(KasplexVerbNames.Get, "NodeStatus")]
 [OutputType(typeof(ResponseSchema))]
-public sealed partial class KRC20VSPCDetails : KasplexPSCmdlet
+public sealed partial class GetNodeStatus : KasplexPSCmdlet
 {
     private KasplexJob<ResponseSchema>? _job;
 
@@ -13,7 +13,7 @@ public sealed partial class KRC20VSPCDetails : KasplexPSCmdlet
 CONSTRUCTORS                                                       |
 ----------------------------------------------------------------- */
 
-    public KRC20VSPCDetails()
+    public GetNodeStatus()
     {
         this._httpClient = KasplexModuleInitializer.Instance?.HttpClient;
         this._deserializerOptions = KasplexModuleInitializer.Instance?.ResponseDeserializer;
@@ -71,7 +71,7 @@ HELPERS                                                            |
 ----------------------------------------------------------------- */
 
     protected override string BuildQuery()
-        => $"/archive/vspc/{DaaScore}";
+        => "info";
 
     private async Task<Either<ErrorRecord, ResponseSchema>> DoProcessLogicAsync(HttpClient http_client, JsonSerializerOptions deserializer_options, CancellationToken cancellation_token)
     {

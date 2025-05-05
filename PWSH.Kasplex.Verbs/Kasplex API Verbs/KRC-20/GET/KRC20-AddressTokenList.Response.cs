@@ -1,6 +1,6 @@
 ﻿namespace PWSH.Kasplex.Verbs;
 
-public sealed partial class KRC20TokenList
+public sealed partial class KRC20AddressTokenList
 {
     private sealed class ResponseSchema : IEquatable<ResponseSchema>, IJSONableDisplayable
     {
@@ -14,7 +14,7 @@ public sealed partial class KRC20TokenList
         public string? Next { get; set; }
 
         [JsonPropertyName("result")]
-        public List<TokenInfoSchema>? Result { get; set; }
+        public List<TokenBalanceSchema>? Result { get; set; }
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
@@ -60,65 +60,42 @@ OPERATOR                                                           |
             => !(left == right);
     }
 
-    private sealed class TokenInfoSchema : IEquatable<TokenInfoSchema>, IJSONableDisplayable
+    private sealed class TokenBalanceSchema : IEquatable<TokenBalanceSchema>, IJSONableDisplayable
     {
+        [JsonPropertyName("ca")]
+        public string? ContractAddress { get; set; }
+
         [JsonPropertyName("tick")]
         public string? Tick { get; set; }
 
-        [JsonPropertyName("max")]
-        public string? Max { get; set; }
+        [JsonPropertyName("balance")]
+        public string? Balance { get; set; }
 
-        [JsonPropertyName("lim")]
-        public string? Lim { get; set; }
-
-        [JsonPropertyName("pre")]
-        public string? Pre { get; set; }
-
-        [JsonPropertyName("to")]
-        public string? To { get; set; }
+        [JsonPropertyName("locked")]
+        public string? Locked { get; set; }
 
         [JsonPropertyName("dec")]
         public string? Dec { get; set; }
 
-        [JsonPropertyName("minted")]
-        public string? Minted { get; set; }
-
-        [JsonPropertyName("opScoreAdd")]
-        public string? OpScoreAdd { get; set; }
-
         [JsonPropertyName("opScoreMod")]
         public string? OpScoreMod { get; set; }
-
-        [JsonPropertyName("state")]
-        public string? State { get; set; }
-
-        [JsonPropertyName("hashRev")]
-        public string? HashRev { get; set; }
-
-        [JsonPropertyName("mtsAdd")]
-        public string? MtsAdd { get; set; }
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
 ----------------------------------------------------------------- */
 
-        public bool Equals(TokenInfoSchema? other)
+        public bool Equals(TokenBalanceSchema? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
 
             return
+                ContractAddress.CompareString(other.ContractAddress) &&
                 Tick.CompareString(other.Tick) &&
-                Max.CompareString(other.Max) &&
-                Lim.CompareString(other.Lim) &&
-                Pre.CompareString(other.Pre) &&
-                To.CompareString(other.To) &&
+                Balance.CompareString(other.Balance) &&
+                Locked.CompareString(other.Locked) &&
                 Dec.CompareString(other.Dec) &&
-                OpScoreAdd.CompareString(other.OpScoreAdd) &&
-                OpScoreMod.CompareString(other.OpScoreMod) &&
-                State.CompareString(other.State) &&
-                HashRev.CompareString(other.HashRev) &&
-                MtsAdd.CompareString(other.MtsAdd);
+                OpScoreMod.CompareString(other.OpScoreMod);
         }
 
         public string ToJSON()
@@ -129,26 +106,23 @@ OVERRIDES                                                          |
 ----------------------------------------------------------------- */
 
         public override bool Equals(object? obj)
-            => Equals(obj as TokenInfoSchema);
+            => Equals(obj as TokenBalanceSchema);
 
         public override int GetHashCode()
-        {
-            var hash = HashCode.Combine(Tick, Max, Lim, Pre, To, Dec);
-            return HashCode.Combine(hash, OpScoreAdd, OpScoreMod, State, HashRev, MtsAdd);
-        }
+            => HashCode.Combine(ContractAddress, Tick, Balance, Locked, Dec, OpScoreMod);
 
 /* -----------------------------------------------------------------
 OPERATOR                                                           |
 ----------------------------------------------------------------- */
 
-        public static bool operator ==(TokenInfoSchema? left, TokenInfoSchema? right)
+        public static bool operator ==(TokenBalanceSchema? left, TokenBalanceSchema? right)
         {
             if (left is null) return right is null;
 
             return left.Equals(right);
         }
 
-        public static bool operator !=(TokenInfoSchema? left, TokenInfoSchema? right)
+        public static bool operator !=(TokenBalanceSchema? left, TokenBalanceSchema? right)
             => !(left == right);
     }
 }

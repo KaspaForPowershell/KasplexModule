@@ -1,14 +1,14 @@
 ﻿namespace PWSH.Kasplex.Verbs;
 
-public sealed partial class KRC20TokenInfo
+public sealed partial class KRC20ArchiveVspcList
 {
     private sealed class ResponseSchema : IEquatable<ResponseSchema>, IJSONableDisplayable
     {
         [JsonPropertyName("message")]
-        public string? Message { get; set; } = string.Empty;
+        public string? Message { get; set; }
 
         [JsonPropertyName("result")]
-        public List<TokenInfoSchema>? Result { get; set; } = new();
+        public List<ResultSchema>? Result { get; set; }
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
@@ -21,7 +21,7 @@ HELPERS                                                            |
 
             return
                 Message.CompareString(other.Message) &&
-                Result.CompareList(other.Result);
+                Result == other.Result;
         }
 
         public string ToJSON()
@@ -52,82 +52,26 @@ OPERATOR                                                           |
             => !(left == right);
     }
 
-    private sealed class TokenInfoSchema : IEquatable<TokenInfoSchema>, IJSONableDisplayable
+    private sealed class ResultSchema : IEquatable<ResultSchema>, IJSONableDisplayable
     {
-        [JsonPropertyName("tick")]
-        public string? Tick { get; set; }
+        [JsonPropertyName("chainBlock")]
+        public ChainBlockSchema? ChainBlock { get; set; }
 
-        [JsonPropertyName("max")]
-        public string? Max { get; set; }
-
-        [JsonPropertyName("lim")]
-        public string? Lim { get; set; }
-
-        [JsonPropertyName("pre")]
-        public string? Pre { get; set; }
-
-        [JsonPropertyName("to")]
-        public string? To { get; set; }
-
-        [JsonPropertyName("dec")]
-        public string? Dec { get; set; }
-
-        [JsonPropertyName("minted")]
-        public string? Minted { get; set; }
-
-        [JsonPropertyName("opScoreAdd")]
-        public string? OpScoreAdd { get; set; }
-
-        [JsonPropertyName("opScoreMod")]
-        public string? OpScoreMod { get; set; }
-
-        [JsonPropertyName("state")]
-        public string? State { get; set; }
-
-        [JsonPropertyName("hashRev")]
-        public string? HashRev { get; set; }
-
-        [JsonPropertyName("mtsAdd")]
-        public string? MtsAdd { get; set; }
-
-        [JsonPropertyName("holderTotal")]
-        public string? HolderTotal { get; set; }
-
-        [JsonPropertyName("transferTotal")]
-        public string? TransferTotal { get; set; }
-
-        [JsonPropertyName("mintTotal")]
-        public string? MintTotal { get; set; }
-
-        [JsonPropertyName("holder")]
-        public List<TokenHolderSchema>? Holder { get; set; }
+        [JsonPropertyName("txList")]
+        public List<TransactionSchema>? TxList { get; set; }
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
 ----------------------------------------------------------------- */
 
-        public bool Equals(TokenInfoSchema? other)
+        public bool Equals(ResultSchema? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
 
             return
-                Tick.CompareString(other.Tick) &&
-                Max.CompareString(other.Max) &&
-                Lim.CompareString(other.Lim) &&
-                Pre.CompareString(other.Pre) &&
-                To.CompareString(other.To) &&
-                Dec.CompareString(other.Dec) &&
-                Minted.CompareString(other.Minted) &&
-                OpScoreAdd.CompareString(other.OpScoreAdd) &&
-                OpScoreMod.CompareString(other.OpScoreMod) &&
-                State.CompareString(other.State) &&
-                HashRev.CompareString(other.HashRev) &&
-                MtsAdd.CompareString(other.MtsAdd) &&
-                HolderTotal.CompareString(other.HolderTotal) &&
-                TransferTotal.CompareString(other.TransferTotal) &&
-                MintTotal.CompareString(other.MintTotal) &&
-                Holder.CompareList(other.Holder);
+                ChainBlock == other.ChainBlock &&
+                TxList.CompareList(other.TxList);
         }
 
         public string ToJSON()
@@ -138,50 +82,57 @@ OVERRIDES                                                          |
 ----------------------------------------------------------------- */
 
         public override bool Equals(object? obj)
-            => Equals(obj as TokenInfoSchema);
+            => Equals(obj as ResultSchema);
 
         public override int GetHashCode()
         {
-            var hash = HashCode.Combine(Tick, Max, Lim, Pre, To, Dec, Minted, OpScoreAdd);
-            hash = HashCode.Combine(hash, OpScoreMod, State, HashRev, MtsAdd, HolderTotal, TransferTotal, MintTotal);
-            return Holder.GenerateHashCode(hash);
+            var hash = HashCode.Combine(ChainBlock);
+            return TxList.GenerateHashCode(hash);
         }
 
 /* -----------------------------------------------------------------
 OPERATOR                                                           |
 ----------------------------------------------------------------- */
 
-        public static bool operator ==(TokenInfoSchema? left, TokenInfoSchema? right)
+        public static bool operator ==(ResultSchema? left, ResultSchema? right)
         {
             if (left is null) return right is null;
 
             return left.Equals(right);
         }
 
-        public static bool operator !=(TokenInfoSchema? left, TokenInfoSchema? right)
+        public static bool operator !=(ResultSchema? left, ResultSchema? right)
             => !(left == right);
     }
 
-    public class TokenHolderSchema : IEquatable<TokenHolderSchema>, IJSONableDisplayable
+    private sealed class ChainBlockSchema : IEquatable<ChainBlockSchema>, IJSONableDisplayable
     {
-        [JsonPropertyName("address")]
-        public string? Address { get; set; }
+        [JsonPropertyName("hash")]
+        public string? Hash { get; set; }
 
-        [JsonPropertyName("amount")]
-        public string? Amount { get; set; }
+        [JsonPropertyName("daascore")]
+        public long DaaScore { get; set; }
+
+        [JsonPropertyName("header")]
+        public string? Header { get; set; }
+
+        [JsonPropertyName("verbose")]
+        public string? Verbose { get; set; }
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
 ----------------------------------------------------------------- */
 
-        public bool Equals(TokenHolderSchema? other)
+        public bool Equals(ChainBlockSchema? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
 
             return
-                Address.CompareString(other.Address) &&
-                Amount.CompareString(other.Amount);
+                Hash.CompareString(other.Hash) &&
+                DaaScore == other.DaaScore &&
+                Header.CompareString(other.Header) &&
+                Verbose.CompareString(other.Verbose);
         }
 
         public string ToJSON()
@@ -192,23 +143,73 @@ OVERRIDES                                                          |
 ----------------------------------------------------------------- */
 
         public override bool Equals(object? obj)
-            => Equals(obj as TokenHolderSchema);
+            => Equals(obj as ChainBlockSchema);
 
         public override int GetHashCode()
-            => HashCode.Combine(Address, Amount);
+            => HashCode.Combine(Hash, DaaScore, Header, Verbose);
 
 /* -----------------------------------------------------------------
 OPERATOR                                                           |
 ----------------------------------------------------------------- */
 
-        public static bool operator ==(TokenHolderSchema? left, TokenHolderSchema? right)
+        public static bool operator ==(ChainBlockSchema? left, ChainBlockSchema? right)
         {
             if (left is null) return right is null;
 
             return left.Equals(right);
         }
 
-        public static bool operator !=(TokenHolderSchema? left, TokenHolderSchema? right)
+        public static bool operator !=(ChainBlockSchema? left, ChainBlockSchema? right)
+            => !(left == right);
+    }
+
+    private sealed class TransactionSchema : IEquatable<TransactionSchema>, IJSONableDisplayable
+    {
+        [JsonPropertyName("txid")]
+        public string? TxID { get; set; }
+
+        [JsonPropertyName("data")]
+        public string? Data { get; set; }
+
+/* -----------------------------------------------------------------
+HELPERS                                                            |
+----------------------------------------------------------------- */
+
+        public bool Equals(TransactionSchema? other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            return
+                TxID.CompareString(other.TxID) &&
+                Data.CompareString(other.Data);
+        }
+
+        public string ToJSON()
+            => JsonSerializer.Serialize(this, KasplexModuleInitializer.Instance?.ResponseSerializer);
+
+/* -----------------------------------------------------------------
+OVERRIDES                                                          |
+----------------------------------------------------------------- */
+
+        public override bool Equals(object? obj)
+            => Equals(obj as TransactionSchema);
+
+        public override int GetHashCode()
+            => HashCode.Combine(TxID, Data);
+
+/* -----------------------------------------------------------------
+OPERATOR                                                           |
+----------------------------------------------------------------- */
+
+        public static bool operator ==(TransactionSchema? left, TransactionSchema? right)
+        {
+            if (left is null) return right is null;
+
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(TransactionSchema? left, TransactionSchema? right)
             => !(left == right);
     }
 }

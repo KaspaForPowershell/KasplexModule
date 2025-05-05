@@ -1,19 +1,19 @@
 ﻿namespace PWSH.Kasplex.Verbs;
 
 /// <summary>
-/// Get balance of KRC-20 tokens of an address.
+/// Get details of a KRC-20 op data.
 /// </summary>
-[Cmdlet(KasplexVerbNames.KRC20, "AddressTokenBalances")]
+[Cmdlet(KasplexVerbNames.KRC20, "ArchiveOperationList")]
 [OutputType(typeof(ResponseSchema))]
-public sealed partial class KRC20AddressTokenBalances : KasplexPSCmdlet
+public sealed partial class KRC20ArchiveOperationList : KasplexPSCmdlet
 {
-    private KasplexJob<List<ResponseSchema>>? _job;
+    private KasplexJob<ResponseSchema>? _job;
 
 /* -----------------------------------------------------------------
 CONSTRUCTORS                                                       |
 ----------------------------------------------------------------- */
 
-    public KRC20AddressTokenBalances()
+    public KRC20ArchiveOperationList()
     {
         this._httpClient = KasplexModuleInitializer.Instance?.HttpClient;
         this._deserializerOptions = KasplexModuleInitializer.Instance?.ResponseDeserializer;
@@ -28,10 +28,10 @@ PROCESS                                                            |
 
     protected override void BeginProcessing()
     {
-        async Task<Either<ErrorRecord, List<ResponseSchema>>> processLogic(CancellationToken cancellation_token) { return await DoProcessLogicAsync(this._httpClient!, this._deserializerOptions!, cancellation_token); }
+        async Task<Either<ErrorRecord, ResponseSchema>> processLogic(CancellationToken cancellation_token) { return await DoProcessLogicAsync(this._httpClient!, this._deserializerOptions!, cancellation_token); }
 
         var thisName = this.MyInvocation.MyCommand.Name;
-        this._job = new KasplexJob<List<ResponseSchema>>(processLogic, thisName);
+        this._job = new KasplexJob<ResponseSchema>(processLogic, thisName);
     }
 
     protected override void ProcessRecord()
@@ -70,40 +70,19 @@ PROCESS                                                            |
 HELPERS                                                            |
 ----------------------------------------------------------------- */
 
-    private string BuildQuery(string? next_page)
-    {
-        var queryParams = HttpUtility.ParseQueryString(string.Empty);
-        queryParams["next"] = next_page;
+    protected override string BuildQuery()
+        => $"/archive/oplist/{OPrange}";
 
-        return string.IsNullOrEmpty(next_page)
-             ? $"/krc20/address/{Address}/tokenlist"
-             : $"/krc20/address/{Address}/tokenlist?" + queryParams.ToString();
-    }
-
-    private async Task<Either<ErrorRecord, List<ResponseSchema>>> DoProcessLogicAsync(HttpClient http_client, JsonSerializerOptions deserializer_options, CancellationToken cancellation_token)
+    private async Task<Either<ErrorRecord, ResponseSchema>> DoProcessLogicAsync(HttpClient http_client, JsonSerializerOptions deserializer_options, CancellationToken cancellation_token)
     {
         try
         {
-            var allTokens = new List<ResponseSchema>();
-            string? nextCursor = null;
-
-            do
-            {
-                var result = await http_client.SendRequestAsync(this, Globals.KASPLEX_API_ADDRESS, BuildQuery(nextCursor), HttpMethod.Get, null, TimeoutSeconds, cancellation_token);
-                if (result.IsLeft)
-                    return result.LeftToList()[0];
-
-                var response = result.RightToList()[0];
-                var message = await response.ProcessResponseAsync<ResponseSchema>(deserializer_options, this, TimeoutSeconds, cancellation_token);
-                if (message.IsLeft)
-                    return message.LeftToList()[0];
-
-                allTokens.Add(message.RightToList()[0]);
-                nextCursor = message.RightToList()[0].Next;
-
-            } while (!string.IsNullOrEmpty(nextCursor) && !cancellation_token.IsCancellationRequested);
-
-            return allTokens;
+            var response = await http_client.SendRequestAsync(this, Globals.KASPLEX_API_ADDRESS, BuildQuery(), HttpMethod.Get, null, TimeoutSeconds, cancellation_token);
+            return await response.MatchAsync
+            (
+                RightAsync: async ok => await ok.ProcessResponseAsync<ResponseSchema>(deserializer_options, this, TimeoutSeconds, cancellation_token),
+                Left: err => err
+            );
         }
         catch (OperationCanceledException)
         { return new ErrorRecord(new OperationCanceledException("Task was canceled."), "TaskCanceled", ErrorCategory.OperationStopped, this); }

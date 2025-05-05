@@ -63,64 +63,61 @@ OPERATOR                                                           |
     private sealed class OperationSchema : IEquatable<OperationSchema>, IJSONableDisplayable
     {
         [JsonPropertyName("p")]
-        public string P { get; set; } = string.Empty;
+        public string? P { get; set; }
 
         [JsonPropertyName("op")]
-        public string Op { get; set; } = string.Empty;
+        public string? Op { get; set; }
 
         [JsonPropertyName("tick")]
-        public string Tick { get; set; } = string.Empty;
+        public string? Tick { get; set; }
 
         [JsonPropertyName("max")]
-        public string Max { get; set; } = string.Empty;
+        public string? Max { get; set; }
 
         [JsonPropertyName("lim")]
-        public string Lim { get; set; } = string.Empty;
-
-        [JsonPropertyName("dec")]
-        public string Dec { get; set; } = string.Empty;
+        public string? Lim { get; set; }
 
         [JsonPropertyName("pre")]
-        public string Pre { get; set; } = string.Empty;
+        public string? Pre { get; set; }
 
-        [JsonPropertyName("amt")]
-        public string Amt { get; set; } = string.Empty;
+        [JsonPropertyName("dec")]
+        public string? Dec { get; set; }
+
+        [JsonPropertyName("mod")]
+        public string? Mod { get; set; }
 
         [JsonPropertyName("from")]
-        public string From { get; set; } = string.Empty;
+        public string? From { get; set; }
 
         [JsonPropertyName("to")]
-        public string To { get; set; } = string.Empty;
+        public string? To { get; set; }
 
         [JsonPropertyName("opScore")]
-        public string OpScore { get; set; } = string.Empty;
+        public string? OpScore { get; set; }
 
         [JsonPropertyName("hashRev")]
-        public string HashRev { get; set; } = string.Empty;
+        public string? HashRev { get; set; }
 
         [JsonPropertyName("feeRev")]
-        public string FeeRev { get; set; } = string.Empty;
+        public string? FeeRev { get; set; }
 
         [JsonPropertyName("txAccept")]
-        public string TxAccept { get; set; } = string.Empty;
+        public string? TxAccept { get; set; }
 
         [JsonPropertyName("opAccept")]
-        public string OpAccept { get; set; } = string.Empty;
+        public string? OpAccept { get; set; }
 
         [JsonPropertyName("opError")]
-        public string OpError { get; set; } = string.Empty;
+        public string? OpError { get; set; }
 
         [JsonPropertyName("mtsAdd")]
-        public string MtsAdd { get; set; } = string.Empty;
+        public string? MtsAdd { get; set; }
 
         [JsonPropertyName("mtsMod")]
-        public string MtsMod { get; set; } = string.Empty;
+        public string? MtsMod { get; set; }
 
-        [JsonPropertyName("utxo")]
-        public string UTXO { get; set; } = string.Empty;
-
-        [JsonPropertyName("price")]
-        public string Price { get; set; } = string.Empty;
+        [JsonPropertyName("checkpoint")]
+        public string? Checkpoint { get; set; }
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
@@ -137,9 +134,9 @@ HELPERS                                                            |
                 Tick.CompareString(other.Tick) &&
                 Max.CompareString(other.Max) &&
                 Lim.CompareString(other.Lim) &&
-                Dec.CompareString(other.Dec) &&
                 Pre.CompareString(other.Pre) &&
-                Amt.CompareString(other.Amt) &&
+                Dec.CompareString(other.Dec) &&
+                Mod.CompareString(other.Mod) &&
                 From.CompareString(other.From) &&
                 To.CompareString(other.To) &&
                 OpScore.CompareString(other.OpScore) &&
@@ -150,8 +147,7 @@ HELPERS                                                            |
                 OpError.CompareString(other.OpError) &&
                 MtsAdd.CompareString(other.MtsAdd) &&
                 MtsMod.CompareString(other.MtsMod) &&
-                UTXO.CompareString(other.UTXO) &&
-                Price.CompareString(other.Price);
+                Checkpoint.CompareString(other.Checkpoint);
         }
 
         public string ToJSON()
@@ -166,9 +162,9 @@ OVERRIDES                                                          |
 
         public override int GetHashCode()
         {
-            var hash = HashCode.Combine(P, Op, Tick, Max, Lim, Dec, Pre, Amt);
+            var hash = HashCode.Combine(P, Op, Tick, Max, Lim, Pre, Dec, Mod);
             hash = HashCode.Combine(hash, From, To, OpScore, HashRev, FeeRev, TxAccept, OpAccept);
-            return HashCode.Combine(hash, OpError, MtsAdd, UTXO, Price);
+            return HashCode.Combine(hash, OpError, MtsAdd, Checkpoint);
         }
 
 /* -----------------------------------------------------------------

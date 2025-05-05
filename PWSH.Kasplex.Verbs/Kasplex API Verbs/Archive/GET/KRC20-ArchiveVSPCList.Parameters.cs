@@ -1,10 +1,10 @@
 ﻿namespace PWSH.Kasplex.Verbs;
 
-public sealed partial class KRC20DataByOPrange
+public sealed partial class KRC20ArchiveVspcList
 {
     [ValidateNotNullOrEmpty]
-    [Parameter(Mandatory = true)]
-    public string? OPrange { get; set; }
+    [Parameter(Mandatory = true, HelpMessage = "Vspc-block DAA score.")]
+    public string? DaaScore { get; set; }
 
     [Parameter(Mandatory = false, HelpMessage = "Http client timeout.")]
     public ulong TimeoutSeconds { get; set; } = Globals.DEFAULT_TIMEOUT_SECONDS;

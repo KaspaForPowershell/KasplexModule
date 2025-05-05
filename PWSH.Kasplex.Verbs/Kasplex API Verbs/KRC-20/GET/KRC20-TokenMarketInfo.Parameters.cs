@@ -1,9 +1,9 @@
 ﻿namespace PWSH.Kasplex.Verbs;
 
-public sealed partial class KRC20ListingList
+public sealed partial class KRC20TokenMarketInfo
 {
     [ValidateNotNullOrEmpty]
-    [Parameter(Mandatory = true)]
+    [Parameter(Mandatory = true, HelpMessage = "Ticker or contract address of the token (case-insensitive).")]
     public string? TokenName { get; set; }
 
     [ValidateKaspaAddress]
@@ -11,7 +11,7 @@ public sealed partial class KRC20ListingList
     public string? Address { get; set; } = null;
 
     [ValidateKaspaTransactionID]
-    [Parameter(Mandatory = false)]
+    [Parameter(Mandatory = false, HelpMessage = "The transaction ID (UTXO) bound to the order. The parameter 'address' is required.")]
     public string? TransactionID { get; set; } = null;
 
     [Parameter(Mandatory = false, HelpMessage = "Http client timeout.")]
