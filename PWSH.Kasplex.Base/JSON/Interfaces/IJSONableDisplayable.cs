@@ -1,11 +1,10 @@
-﻿namespace PWSH.Kasplex.Base.JSON.Interfaces
+﻿namespace PWSH.Kasplex.Base.JSON.Interfaces;
+
+public interface IJSONableDisplayable
 {
-    public interface IJSONableDisplayable
-    {
-        /// <summary>
-        /// Display as serialized indented JSON.
-        /// </summary>
-        /// <returns>Indented JSON</returns>
-        string ToJSON();
-    }
+    /// <summary>
+    /// Display as serialized indented JSON.
+    /// </summary>
+    /// <returns>Indented JSON</returns>
+    string ToJSON();
 }

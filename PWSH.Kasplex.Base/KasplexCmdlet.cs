@@ -1,6 +1,5 @@
-﻿namespace PWSH.Kasplex.Base
+﻿namespace PWSH.Kasplex.Base;
+
+public abstract class KasplexCmdlet : Cmdlet
 {
-    public abstract class KasplexCmdlet : Cmdlet
-    {
-    }
 }
