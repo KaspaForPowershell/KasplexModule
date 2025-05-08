@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PWSH.Kasplex.Constants", "P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PWSH.Kasplex.Verbs", "PWSH.Kasplex.Verbs\PWSH.Kasplex.Verbs.csproj", "{D8AD5F83-A838-45E5-B552-8599F390B32F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PWSH.Kasplex.SourceGenerators", "PWSH.Kasplex.SourceGenerators\PWSH.Kasplex.SourceGenerators.csproj", "{C7113634-8364-42C2-BE5F-9A5CAF28C6D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{D8AD5F83-A838-45E5-B552-8599F390B32F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8AD5F83-A838-45E5-B552-8599F390B32F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8AD5F83-A838-45E5-B552-8599F390B32F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7113634-8364-42C2-BE5F-9A5CAF28C6D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7113634-8364-42C2-BE5F-9A5CAF28C6D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7113634-8364-42C2-BE5F-9A5CAF28C6D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7113634-8364-42C2-BE5F-9A5CAF28C6D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

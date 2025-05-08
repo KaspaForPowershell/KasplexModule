@@ -6,5 +6,6 @@ global using PWSH.Kasplex.Base;
 global using PWSH.Kasplex.Base.Attributes;
 global using PWSH.Kasplex.Base.JSON.Interfaces;
 global using PWSH.Kasplex.Constants;
+global using PWSH.Kasplex.SourceGenerators.Attributes;
 
 global using LanguageExt;

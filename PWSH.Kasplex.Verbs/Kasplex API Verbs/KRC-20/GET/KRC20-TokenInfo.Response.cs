@@ -2,57 +2,18 @@
 
 public sealed partial class KRC20TokenInfo
 {
-    private sealed class ResponseSchema : IEquatable<ResponseSchema>, IJSONableDisplayable
+    [GenerateResponseSchemaBoilerplate]
+    private sealed partial class ResponseSchema
     {
         [JsonPropertyName("message")]
         public string? Message { get; set; } = string.Empty;
 
         [JsonPropertyName("result")]
-        public List<TokenInfoSchema>? Result { get; set; } = new();
-
-/* -----------------------------------------------------------------
-HELPERS                                                            |
------------------------------------------------------------------ */
-
-        public bool Equals(ResponseSchema? other)
-        {
-            if (other is null) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            return
-                Message.CompareString(other.Message) &&
-                Result.CompareList(other.Result);
-        }
-
-        public string ToJSON()
-            => JsonSerializer.Serialize(this, KasplexModuleInitializer.Instance?.ResponseSerializer);
-
-/* -----------------------------------------------------------------
-OVERRIDES                                                          |
------------------------------------------------------------------ */
-
-        public override bool Equals(object? obj)
-            => Equals(obj as ResponseSchema);
-
-        public override int GetHashCode()
-            => HashCode.Combine(Message, Result);
-
-/* -----------------------------------------------------------------
-OPERATOR                                                           |
------------------------------------------------------------------ */
-
-        public static bool operator ==(ResponseSchema? left, ResponseSchema? right)
-        {
-            if (left is null) return right is null;
-
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(ResponseSchema? left, ResponseSchema? right)
-            => !(left == right);
+        public List<TokenInfoSchema>? Result { get; set; } = [];
     }
 
-    private sealed class TokenInfoSchema : IEquatable<TokenInfoSchema>, IJSONableDisplayable
+    [GenerateResponseSchemaBoilerplate]
+    private sealed partial class TokenInfoSchema
     {
         [JsonPropertyName("ca")]
         public string? ContractAddress { get; set; }
@@ -110,119 +71,15 @@ OPERATOR                                                           |
 
         [JsonPropertyName("holder")]
         public List<TokenHolderSchema>? Holder { get; set; }
-
-/* -----------------------------------------------------------------
-HELPERS                                                            |
------------------------------------------------------------------ */
-
-        public bool Equals(TokenInfoSchema? other)
-        {
-            if (other is null) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            return
-                ContractAddress.CompareString(other.ContractAddress) &&
-                Name.CompareString(other.Name) &&
-                Max.CompareString(other.Max) &&
-                Lim.CompareString(other.Lim) &&
-                Pre.CompareString(other.Pre) &&
-                To.CompareString(other.To) &&
-                Dec.CompareString(other.Dec) &&
-                Mod.CompareString(other.Mod) &&
-                Minted.CompareString(other.Minted) &&
-                Burned.CompareString(other.Burned) &&
-                OpScoreAdd.CompareString(other.OpScoreAdd) &&
-                OpScoreMod.CompareString(other.OpScoreMod) &&
-                State.CompareString(other.State) &&
-                HashRev.CompareString(other.HashRev) &&
-                MtsAdd.CompareString(other.MtsAdd) &&
-                HolderTotal.CompareString(other.HolderTotal) &&
-                TransferTotal.CompareString(other.TransferTotal) &&
-                MintTotal.CompareString(other.MintTotal) &&
-                Holder.CompareList(other.Holder);
-        }
-
-        public string ToJSON()
-            => JsonSerializer.Serialize(this, KasplexModuleInitializer.Instance?.ResponseSerializer);
-
-/* -----------------------------------------------------------------
-OVERRIDES                                                          |
------------------------------------------------------------------ */
-
-        public override bool Equals(object? obj)
-            => Equals(obj as TokenInfoSchema);
-
-        public override int GetHashCode()
-        {
-            var hash = HashCode.Combine(ContractAddress, Name, Max, Lim, Pre, To, Dec, Mod);
-            hash = HashCode.Combine(hash, Minted, Burned, OpScoreAdd, OpScoreMod, State);
-            hash = HashCode.Combine(hash, HashRev, MtsAdd, HolderTotal, TransferTotal, MintTotal);
-
-            return Holder.GenerateHashCode(hash);
-        }
-
-/* -----------------------------------------------------------------
-OPERATOR                                                           |
------------------------------------------------------------------ */
-
-        public static bool operator ==(TokenInfoSchema? left, TokenInfoSchema? right)
-        {
-            if (left is null) return right is null;
-
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(TokenInfoSchema? left, TokenInfoSchema? right)
-            => !(left == right);
     }
 
-    public class TokenHolderSchema : IEquatable<TokenHolderSchema>, IJSONableDisplayable
+    [GenerateResponseSchemaBoilerplate]
+    public sealed partial class TokenHolderSchema
     {
         [JsonPropertyName("address")]
         public string? Address { get; set; }
 
         [JsonPropertyName("amount")]
         public string? Amount { get; set; }
-
-/* -----------------------------------------------------------------
-HELPERS                                                            |
------------------------------------------------------------------ */
-
-        public bool Equals(TokenHolderSchema? other)
-        {
-            if (other is null) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            return
-                Address.CompareString(other.Address) &&
-                Amount.CompareString(other.Amount);
-        }
-
-        public string ToJSON()
-            => JsonSerializer.Serialize(this, KasplexModuleInitializer.Instance?.ResponseSerializer);
-
-/* -----------------------------------------------------------------
-OVERRIDES                                                          |
------------------------------------------------------------------ */
-
-        public override bool Equals(object? obj)
-            => Equals(obj as TokenHolderSchema);
-
-        public override int GetHashCode()
-            => HashCode.Combine(Address, Amount);
-
-/* -----------------------------------------------------------------
-OPERATOR                                                           |
------------------------------------------------------------------ */
-
-        public static bool operator ==(TokenHolderSchema? left, TokenHolderSchema? right)
-        {
-            if (left is null) return right is null;
-
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(TokenHolderSchema? left, TokenHolderSchema? right)
-            => !(left == right);
     }
 }

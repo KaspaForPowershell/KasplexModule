@@ -2,57 +2,18 @@
 
 public sealed partial class KRC20AddressTokenBalance
 {
-    private sealed class ResponseSchema : IEquatable<ResponseSchema>, IJSONableDisplayable
+    [GenerateResponseSchemaBoilerplate]
+    private sealed partial class ResponseSchema
     {
         [JsonPropertyName("message")]
         public string? Message { get; set; } = string.Empty;
 
         [JsonPropertyName("result")]
-        public List<TokenBalanceSchema>? Result { get; set; } = new();
-
-/* -----------------------------------------------------------------
-HELPERS                                                            |
------------------------------------------------------------------ */
-
-        public bool Equals(ResponseSchema? other)
-        {
-            if (other is null) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            return
-                Message.CompareString(other.Message) &&
-                Result.CompareList(other.Result);
-        }
-
-        public string ToJSON()
-            => JsonSerializer.Serialize(this, KasplexModuleInitializer.Instance?.ResponseSerializer);
-
-/* -----------------------------------------------------------------
-OVERRIDES                                                          |
------------------------------------------------------------------ */
-
-        public override bool Equals(object? obj)
-            => Equals(obj as ResponseSchema);
-
-        public override int GetHashCode()
-            => HashCode.Combine(Message, Result);
-
-/* -----------------------------------------------------------------
-OPERATOR                                                           |
------------------------------------------------------------------ */
-
-        public static bool operator ==(ResponseSchema? left, ResponseSchema? right)
-        {
-            if (left is null) return right is null;
-
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(ResponseSchema? left, ResponseSchema? right)
-            => !(left == right);
+        public List<TokenBalanceSchema>? Result { get; set; } = [];
     }
 
-    private sealed class TokenBalanceSchema : IEquatable<TokenBalanceSchema>, IJSONableDisplayable
+    [GenerateResponseSchemaBoilerplate]
+    private sealed partial class TokenBalanceSchema
     {
         [JsonPropertyName("tick")]
         public string? Tick { get; set; }
@@ -68,49 +29,5 @@ OPERATOR                                                           |
 
         [JsonPropertyName("opScoreMod")]
         public string? OpScoreMod { get; set; }
-
-/* -----------------------------------------------------------------
-HELPERS                                                            |
------------------------------------------------------------------ */
-
-        public bool Equals(TokenBalanceSchema? other)
-        {
-            if (other is null) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            return
-                Tick.CompareString(other.Tick) &&
-                Balance.CompareString(other.Balance) &&
-                Locked.CompareString(other.Locked) &&
-                Dec.CompareString(other.Dec) &&
-                OpScoreMod.CompareString(other.OpScoreMod);
-        }
-
-        public string ToJSON()
-            => JsonSerializer.Serialize(this, KasplexModuleInitializer.Instance?.ResponseSerializer);
-
-/* -----------------------------------------------------------------
-OVERRIDES                                                          |
------------------------------------------------------------------ */
-
-        public override bool Equals(object? obj)
-            => Equals(obj as TokenBalanceSchema);
-
-        public override int GetHashCode()
-            => HashCode.Combine(Tick, Balance, Locked, Dec, OpScoreMod);
-
-/* -----------------------------------------------------------------
-OPERATOR                                                           |
------------------------------------------------------------------ */
-
-        public static bool operator ==(TokenBalanceSchema? left, TokenBalanceSchema? right)
-        {
-            if (left is null) return right is null;
-
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(TokenBalanceSchema? left, TokenBalanceSchema? right)
-            => !(left == right);
     }
 }
