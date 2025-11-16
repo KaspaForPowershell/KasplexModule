@@ -1,6 +1,6 @@
 ﻿namespace PWSH.Kasplex.SourceGenerators;
 
-public static class ExtensionMethods
+public static class Extensions
 {
     public static StringBuilder AppendIndent(this StringBuilder me, int indent_level)
         => me.Append(new string('\t', indent_level));
